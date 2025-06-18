@@ -23,7 +23,6 @@ main() {
 
   if [ -z "$dir" ]; then
     echo "Error: No writable directory found in \$PATH."
-    echo "No write access to any directory in \$PATH."
 
     return 1
   fi
