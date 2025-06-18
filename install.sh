@@ -23,12 +23,13 @@ main() {
 
   if [ -z "$dir" ]; then
     echo "Error: No writable directory found in \$PATH."
-    echo "Please run as a user (sudo) with write permissions to a directory in \$PATH."
+    echo "No write access to any directory in \$PATH. Try an install with sudo."
 
     return 1
   fi
 
-  local url="https://raw.githubusercontent.com/ericcurtin/$bin/refs/heads/main/$bin"
+  local host="https://raw.githubusercontent.com"
+  local url="$host/ericcurtin/$bin/refs/heads/main/$bin"
   curl -fsSL "$url" -o "$dir/$bin"
   chmod a+rx "$dir/$bin"
 }
