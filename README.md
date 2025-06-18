@@ -2,6 +2,12 @@
 
 A minimal command-line utility for pushing and pulling files to and from OCI-compatible registries using [skopeo](https://github.com/containers/skopeo). This tool packages one or more files as an OCI image layer and uploads or downloads them directly from a registry.
 
+## Install
+
+```
+curl -fsSL https://raw.githubusercontent.com/ericcurtin/ocicp/refs/heads/main/install.sh | bash
+```
+
 ## Features
 
 - **Push** files as a single-layer OCI image to any registry supported by `skopeo`.
