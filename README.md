@@ -5,7 +5,7 @@ A minimal command-line utility for pushing and pulling files to and from OCI-com
 ## Install
 
 ```
-curl -fsSL https://raw.githubusercontent.com/ericcurtin/ocicp/refs/heads/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/ericcurtin/ocicp/refs/heads/main/install.sh | sudo bash
 ```
 
 ## Features
