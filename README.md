@@ -17,8 +17,8 @@ curl -fsSL https://raw.githubusercontent.com/ericcurtin/ocicp/refs/heads/main/in
 ## Usage
 
 ```sh
-./ocicp push <image> <file1> [<file2> ...]
-./ocicp pull <image>
+ocicp push <image> <file1> [<file2> ...]
+ocicp pull <image>
 ```
 
 ### Examples
@@ -26,7 +26,7 @@ curl -fsSL https://raw.githubusercontent.com/ericcurtin/ocicp/refs/heads/main/in
 #### Push files to a registry
 
 ```sh
-./ocicp push quay.io/yourorg/yourimage:latest file1.txt file2.conf
+ocicp push quay.io/yourorg/yourimage:latest file1.txt file2.conf
 ```
 
 - Packages `file1.txt` and `file2.conf` into a single-layer OCI image and pushes it to `quay.io/yourorg/yourimage:latest`.
@@ -34,7 +34,7 @@ curl -fsSL https://raw.githubusercontent.com/ericcurtin/ocicp/refs/heads/main/in
 #### Pull files from a registry
 
 ```sh
-./ocicp pull quay.io/yourorg/yourimage:latest
+ocicp pull quay.io/yourorg/yourimage:latest
 ```
 
 - Downloads the OCI image and extracts its files into the current directory.
