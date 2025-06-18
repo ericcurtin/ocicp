@@ -160,12 +160,15 @@ def main():
     pull_parser.add_argument("image", help="OCI image reference (e.g. quay.io/repo/image)")
 
     args = parser.parse_args()
+    ret = 0
     if args.command == "push":
-        sys.exit(push(args.image, args.file))
+        ret = push(args.image, args.file)
     elif args.command == "pull":
-        sys.exit(pull(args.image))
+        ret = pull(args.image)
     else:
         parser.print_help()
+
+    sys.exit(ret)
 
 if __name__ == "__main__":
     main()
