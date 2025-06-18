@@ -22,8 +22,9 @@ def sha256sum(filepath):
 
 def run_cmd(cmd, check=True):
     result = subprocess.run(cmd)
-    if check and result.returncode != 0:
+    if check:
         return result.returncode
+
     return 0
 
 def create_layer_tarball(files, tempdir):
