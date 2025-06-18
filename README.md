@@ -16,7 +16,7 @@ curl -fsSL https://raw.githubusercontent.com/ericcurtin/ocicp/refs/heads/main/in
 
 ## Usage
 
-```sh
+```
 ocicp push <image> <file1> [<file2> ...]
 ocicp pull <image>
 ```
