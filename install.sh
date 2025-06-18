@@ -8,7 +8,7 @@ main() {
   set -e -o pipefail
 
   if ! available "skopeo"; then
-    echo "Error: RamaLama requires skopeo to complete installation."
+    echo "Error: ocicp requires skopeo to complete installation."
 
     return 1
   fi
