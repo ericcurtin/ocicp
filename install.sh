@@ -7,8 +7,9 @@ available() {
 main() {
   set -e -o pipefail
 
+  local bin="ocicp"
   if ! available "skopeo"; then
-    echo "Error: ocicp requires skopeo to complete installation."
+    echo "Error: $bin requires skopeo to complete installation."
 
     return 1
   fi
@@ -27,10 +28,9 @@ main() {
     return 1
   fi
 
-  local f="ocicp"
-  local url="https://raw.githubusercontent.com/ericcurtin/ocicp/refs/heads/main/$f"
-  curl -fsSL "$url" -o "$dir/$f"
-  chmod a+rx "$dir/$f"
+  local url="https://raw.githubusercontent.com/ericcurtin/$bin/refs/heads/main/$bin"
+  curl -fsSL "$url" -o "$dir/$bin"
+  chmod a+rx "$dir/$bin"
 }
 
 main "$@"
