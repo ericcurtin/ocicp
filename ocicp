@@ -11,6 +11,7 @@ import json
 import time
 import shutil
 import gzip
+import warnings
 
 def sha256sum(filepath):
     h = hashlib.sha256()
@@ -141,7 +142,8 @@ def pull(image_ref):
                 # extract gzip-compressed tar layer
                 with gzip.open(layer_tar, "rb") as gzfile:
                     with tarfile.open(fileobj=gzfile, mode="r:") as tarf:
-                        tarf.extractall(".", filter="data")
+                        warnings.simplefilter("ignore", DeprecationWarning)
+                        tarf.extractall(".", filter=None)
 
         return 0
 
