@@ -36,7 +36,7 @@ A minimal command-line utility for pushing and pulling files to and from OCI-com
 ## Requirements
 
 - Python 3.9 or later
-- [skopeo](https://github.com/containers/skopeo) must be installed and available in your `$PATH`
+- [skopeo](https://github.com/containers/skopeo) must be available
 
 ## Design Notes
 
