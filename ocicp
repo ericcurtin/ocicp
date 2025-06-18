@@ -28,15 +28,12 @@ def run_cmd(cmd, check=True):
 def create_layer_tarball(files, tempdir):
     """1. Create a layer tarball from the given files as a gzip-compressed tar with max compression."""
     layer_tar_path = os.path.join(tempdir, "layer.tar.gz")
-    # Use tarfile to write to an uncompressed tar, then gzip manually with max compression
-    raw_tar_path = os.path.join(tempdir, "layer-raw.tar")
-    with tarfile.open(raw_tar_path, "w") as tar:
-        for f in files:
-            tar.add(f, arcname=os.path.basename(f))
-    # Gzip with maximum compression
-    with open(raw_tar_path, "rb") as f_in, gzip.open(layer_tar_path, "wb", compresslevel=9) as f_out:
-        shutil.copyfileobj(f_in, f_out)
-    os.remove(raw_tar_path)
+    with gzip.open(layer_tar_path, "wb", compresslevel=9) as gz_out:
+        # mode 'w|', the '|' means stream, so tarfile writes to an open file-like object
+        with tarfile.open(fileobj=gz_out, mode="w|") as tar:
+            for f in files:
+                tar.add(f, arcname=os.path.basename(f))
+
     # Digest is over the *compressed* tar
     layer_digest_hex = sha256sum(layer_tar_path)
     layer_digest = "sha256:" + layer_digest_hex
