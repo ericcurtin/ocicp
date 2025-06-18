@@ -143,7 +143,7 @@ def pull(image_ref):
                 with gzip.open(layer_tar, "rb") as gzfile:
                     with tarfile.open(fileobj=gzfile, mode="r:") as tarf:
                         warnings.simplefilter("ignore", DeprecationWarning)
-                        tarf.extractall(".", filter=None)
+                        tarf.extractall(".")
 
         return 0
 
