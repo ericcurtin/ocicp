@@ -149,7 +149,7 @@ def pull(image_ref):
         return 0
 
 def main():
-    parser = argparse.ArgumentParser(description="Simple OCI registry file push/pull tool using skopeo.")
+    parser = argparse.ArgumentParser(description="OCI registry file push/pull tool using skopeo.")
     subparsers = parser.add_subparsers(dest="command", required=True)
 
     push_parser = subparsers.add_parser("push", help="Push files to OCI image")

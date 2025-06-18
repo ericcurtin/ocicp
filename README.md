@@ -1,6 +1,6 @@
 # ocicp
 
-A minimal command-line utility for pushing and pulling files to and from OCI-compatible registries using [skopeo](https://github.com/containers/skopeo). This tool packages one or more files as an OCI image layer and uploads or downloads them directly from a registry.
+A command-line utility for pushing and pulling files to and from OCI-compatible registries using [skopeo](https://github.com/containers/skopeo). This tool packages one or more files as an OCI image layer and uploads or downloads them directly from a registry.
 
 ## Install
 
