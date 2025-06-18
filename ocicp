@@ -115,8 +115,6 @@ def push(image_ref, files):
         if ret:
            return ret
 
-        print(f"Pushed files to {image_ref}")
-
         return 0
 
 def pull(image_ref):
@@ -140,8 +138,6 @@ def pull(image_ref):
                 with gzip.open(layer_tar, "rb") as gzfile:
                     with tarfile.open(fileobj=gzfile, mode="r:") as tarf:
                         tarf.extractall(".", filter="data")
-
-        print(f"Pulled files from {image_ref}")
 
         return 0
 
