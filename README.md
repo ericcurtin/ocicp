@@ -25,7 +25,7 @@ ocicp pull <image>
 
 #### Push files to a registry
 
-```sh
+```
 $ ocicp push quay.io/yourorg/yourimage:latest file1.txt file2.conf
 Getting image source signatures
 Copying blob 6c43a1ee1e9b done   |
@@ -37,7 +37,7 @@ Writing manifest to image destination
 
 #### Pull files from a registry
 
-```sh
+```
 $ ocicp pull quay.io/yourorg/yourimage:latest
 Getting image source signatures
 Copying blob 6c43a1ee1e9b done   |
