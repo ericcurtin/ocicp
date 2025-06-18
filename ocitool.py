@@ -10,28 +10,34 @@ import hashlib
 import json
 import time
 import shutil
+import gzip
 
 def sha256sum(filepath):
     h = hashlib.sha256()
     with open(filepath, 'rb') as f:
         for b in iter(lambda: f.read(4096), b''):
             h.update(b)
-
     return h.hexdigest()
 
 def run_cmd(cmd, check=True):
     result = subprocess.run(cmd)
     if check and result.returncode != 0:
         return result.returncode
-
     return 0
 
 def create_layer_tarball(files, tempdir):
-    """1. Create a layer tarball from the given files."""
-    layer_tar_path = os.path.join(tempdir, "layer.tar")
-    with tarfile.open(layer_tar_path, "w") as tar:
+    """1. Create a layer tarball from the given files as a gzip-compressed tar with max compression."""
+    layer_tar_path = os.path.join(tempdir, "layer.tar.gz")
+    # Use tarfile to write to an uncompressed tar, then gzip manually with max compression
+    raw_tar_path = os.path.join(tempdir, "layer-raw.tar")
+    with tarfile.open(raw_tar_path, "w") as tar:
         for f in files:
             tar.add(f, arcname=os.path.basename(f))
+    # Gzip with maximum compression
+    with open(raw_tar_path, "rb") as f_in, gzip.open(layer_tar_path, "wb", compresslevel=9) as f_out:
+        shutil.copyfileobj(f_in, f_out)
+    os.remove(raw_tar_path)
+    # Digest is over the *compressed* tar
     layer_digest_hex = sha256sum(layer_tar_path)
     layer_digest = "sha256:" + layer_digest_hex
     layer_size = os.path.getsize(layer_tar_path)
@@ -80,7 +86,7 @@ def write_manifest_object(config_digest, config_size, layer_digest, layer_size, 
         },
         "layers": [
             {
-                "mediaType": "application/vnd.docker.image.rootfs.diff.tar",
+                "mediaType": "application/vnd.docker.image.rootfs.diff.tar.gzip",
                 "size": layer_size,
                 "digest": layer_digest
             }
@@ -133,9 +139,10 @@ def pull(image_ref):
             layer_digest = layer["digest"].split(":")[1]
             layer_tar = os.path.join(tempdir, layer_digest)
             if os.path.exists(layer_tar):
-                with tarfile.open(layer_tar, "r") as tarf:
-                    tarf.extractall(".", filter="data")
-                    # print(f"Extracted files from layer {layer_digest}")
+                # extract gzip-compressed tar layer
+                with gzip.open(layer_tar, "rb") as gzfile:
+                    with tarfile.open(fileobj=gzfile, mode="r:") as tarf:
+                        tarf.extractall(".", filter="data")
 
         print(f"Pulled files from {image_ref}")
 
