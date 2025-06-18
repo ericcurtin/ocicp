@@ -35,35 +35,16 @@ A minimal command-line utility for pushing and pulling files to and from OCI-com
 
 ## Requirements
 
-- Python 3.6 or later
+- Python 3.9 or later
 - [skopeo](https://github.com/containers/skopeo) must be installed and available in your `$PATH`
-
-## How it works
-
-1. **Push:**
-   - Creates a layer tarball containing the specified files.
-   - Generates a minimal OCI image config and manifest.
-   - Uploads the local directory image to the specified registry reference.
-
-2. **Pull:**
-   - Download the image from the registry into a local temp directory.
-   - Extracts the files from the image layer into the working directory.
 
 ## Design Notes
 
 - Images are created using Image Manifest Version 2, Schema 2 (OCI compatible).
 - Each push creates a new image with a single layer containing the provided files.
-- Files are always extracted into the current directory on pull.
 - Layer and config files are named by their SHA256 digest to comply with `skopeo` expectations.
-
-## Limitations (for now)
-
-- Only supports single-layer images (all files are packed together).
-- No support for advanced image features (labels, commands, environment, etc.).
-- No authentication handling—ensure `skopeo` is configured for your registry.
 
 ## Troubleshooting
 
-- If you encounter errors, ensure `skopeo` is installed and can access your registry.
 - If pushing to a private registry, make sure you've logged in using `podman login` or have the correct credentials set up.
 
