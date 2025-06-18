@@ -1,6 +1,6 @@
 # ocicp
 
-A minimal command-line utility for pushing and pulling files to and from OCI-compatible registries using [skopeo](https://github.com/containers/skopeo). This tool packages one or more files as a Docker-compatible OCI image layer and uploads or downloads them directly from a registry.
+A minimal command-line utility for pushing and pulling files to and from OCI-compatible registries using [skopeo](https://github.com/containers/skopeo). This tool packages one or more files as an OCI image layer and uploads or downloads them directly from a registry.
 
 ## Features
 
@@ -51,7 +51,7 @@ A minimal command-line utility for pushing and pulling files to and from OCI-com
 
 ## Design Notes
 
-- Images are created using Docker V2 Schema 2 (OCI compatible).
+- Images are created using Image Manifest Version 2, Schema 2 (OCI compatible).
 - Each push creates a new image with a single layer containing the provided files.
 - Files are always extracted into the current directory on pull.
 - Layer and config files are named by their SHA256 digest to comply with `skopeo` expectations.
