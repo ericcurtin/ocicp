@@ -26,7 +26,11 @@ ocicp pull <image>
 #### Push files to a registry
 
 ```sh
-ocicp push quay.io/yourorg/yourimage:latest file1.txt file2.conf
+$ ocicp push quay.io/yourorg/yourimage:latest file1.txt file2.conf
+Getting image source signatures
+Copying blob 6c43a1ee1e9b done   |
+Copying config eeab4a7bd2 done   |
+Writing manifest to image destination
 ```
 
 - Packages `file1.txt` and `file2.conf` into a single-layer OCI image and pushes it to `quay.io/yourorg/yourimage:latest`.
@@ -34,7 +38,11 @@ ocicp push quay.io/yourorg/yourimage:latest file1.txt file2.conf
 #### Pull files from a registry
 
 ```sh
-ocicp pull quay.io/yourorg/yourimage:latest
+$ ocicp pull quay.io/yourorg/yourimage:latest
+Getting image source signatures
+Copying blob 6c43a1ee1e9b done   |
+Copying config eeab4a7bd2 done   |
+Writing manifest to image destination
 ```
 
 - Downloads the OCI image and extracts its files into the current directory.
