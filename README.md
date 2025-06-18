@@ -1,4 +1,4 @@
-# ocitool.py
+# ocicp
 
 A minimal command-line utility for pushing and pulling files to and from OCI-compatible registries using [skopeo](https://github.com/containers/skopeo). This tool packages one or more files as a Docker-compatible OCI image layer and uploads or downloads them directly from a registry.
 
@@ -11,8 +11,8 @@ A minimal command-line utility for pushing and pulling files to and from OCI-com
 ## Usage
 
 ```sh
-./ocitool.py push <image> <file1> [<file2> ...]
-./ocitool.py pull <image>
+./ocicp push <image> <file1> [<file2> ...]
+./ocicp pull <image>
 ```
 
 ### Examples
@@ -20,7 +20,7 @@ A minimal command-line utility for pushing and pulling files to and from OCI-com
 #### Push files to a registry
 
 ```sh
-./ocitool.py push quay.io/yourorg/yourimage:latest file1.txt file2.conf
+./ocicp push quay.io/yourorg/yourimage:latest file1.txt file2.conf
 ```
 
 - Packages `file1.txt` and `file2.conf` into a single-layer OCI image and pushes it to `quay.io/yourorg/yourimage:latest`.
@@ -28,7 +28,7 @@ A minimal command-line utility for pushing and pulling files to and from OCI-com
 #### Pull files from a registry
 
 ```sh
-./ocitool.py pull quay.io/yourorg/yourimage:latest
+./ocicp pull quay.io/yourorg/yourimage:latest
 ```
 
 - Downloads the OCI image and extracts its files into the current directory.

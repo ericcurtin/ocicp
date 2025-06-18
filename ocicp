@@ -60,7 +60,7 @@ def create_config(layer_digest, tempdir):
         },
         "history": [{
             "created": created,
-            "created_by": "ocitool.py"
+            "created_by": "ocicp"
         }]
     }
     config_json_path = os.path.join(tempdir, "config.json")
