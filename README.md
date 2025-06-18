@@ -33,7 +33,7 @@ Copying config eeab4a7bd2 done   |
 Writing manifest to image destination
 ```
 
-- Packages `file1.txt` and `file2.conf` into a single-layer OCI image and pushes it to `quay.io/yourorg/yourimage:latest`.
+- Packages `file1.txt` and `file2.conf` into a single-layer OCI image and pushes it.
 
 #### Pull files from a registry
 
