@@ -60,5 +60,5 @@ Writing manifest to image destination
 
 ## Troubleshooting
 
-- If pushing to a private registry, make sure you've logged in using `podman login` or have the correct credentials set up.
+- If pushing to a private registry, make sure you've logged in using `skopeo login` or have the correct credentials set up.
 
