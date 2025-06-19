@@ -136,9 +136,7 @@ def push(image_ref, files):
             f"dir:{tempdir}",
             f"docker://{image_ref}"
         ])
-        if ret:
-            return ret
-        return 0
+        return ret
 
 def pull(image_ref):
     """
