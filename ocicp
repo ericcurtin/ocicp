@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
 
+"""
+OCI registry file push/pull tool.
+"""
+
 import argparse
 import subprocess
 import sys
@@ -14,6 +18,7 @@ import gzip
 import warnings
 
 def sha256sum(filepath):
+    """Compute SHA256 hex digest for a file."""
     h = hashlib.sha256()
     with open(filepath, 'rb') as f:
         for b in iter(lambda: f.read(4096), b''):
@@ -21,14 +26,15 @@ def sha256sum(filepath):
     return h.hexdigest()
 
 def run_cmd(cmd, check=True):
-    result = subprocess.run(cmd)
+    """Run a shell command. If check=True, return its exit code, else return 0."""
+    result = subprocess.run(cmd, check=False)
     if check:
         return result.returncode
-
     return 0
 
 def create_layer_tarball(files, tempdir):
-    """1. Create a layer tarball from the given files as a gzip-compressed tar with max compression.
+    """
+    1. Create a layer tarball from the given files as a gzip-compressed tar with max compression.
 
     Files are archived with paths relative to the current directory, like 'tar' would do by default.
     """
@@ -47,10 +53,12 @@ def create_layer_tarball(files, tempdir):
     # Skopeo expects the file to be named as the hex digest, no extension.
     final_layer_path = os.path.join(tempdir, layer_digest_hex)
     shutil.move(layer_tar_path, final_layer_path)
-    return layer_digest, layer_digest_hex, layer_size, final_layer_path
+    return layer_digest, layer_size, final_layer_path
 
 def create_config(layer_digest, tempdir):
-    """2. Create a minimal config (Docker image config, V2 Schema 2)."""
+    """
+    2. Create a minimal config (Docker image config, V2 Schema 2).
+    """
     created = time.strftime("%Y-%m-%dT%H:%M:%S.000000000Z", time.gmtime())
     config = {
         "created": created,
@@ -67,7 +75,7 @@ def create_config(layer_digest, tempdir):
         }]
     }
     config_json_path = os.path.join(tempdir, "config.json")
-    with open(config_json_path, "w") as f:
+    with open(config_json_path, "w", encoding="utf-8") as f:
         json.dump(config, f, separators=(",", ":"))
     config_digest_hex = sha256sum(config_json_path)
     config_digest = "sha256:" + config_digest_hex
@@ -75,10 +83,12 @@ def create_config(layer_digest, tempdir):
     # Name config as its digest too
     final_config_path = os.path.join(tempdir, config_digest_hex)
     shutil.move(config_json_path, final_config_path)
-    return config_digest, config_digest_hex, config_size, final_config_path
+    return config_digest, config_size, final_config_path
 
 def write_manifest_object(config_digest, config_size, layer_digest, layer_size, tempdir):
-    """3. Write manifest as an OBJECT (not an array)."""
+    """
+    3. Write manifest as an OBJECT (not an array).
+    """
     manifest = {
         "schemaVersion": 2,
         "mediaType": "application/vnd.docker.distribution.manifest.v2+json",
@@ -96,14 +106,19 @@ def write_manifest_object(config_digest, config_size, layer_digest, layer_size, 
         ]
     }
     manifest_json = os.path.join(tempdir, "manifest.json")
-    with open(manifest_json, "w") as f:
+    with open(manifest_json, "w", encoding="utf-8") as f:
         json.dump(manifest, f, separators=(",", ":"))
     return manifest_json
 
 def make_dir_image(files, tempdir):
-    layer_digest, layer_digest_hex, layer_size, final_layer_path = create_layer_tarball(files, tempdir)
-    config_digest, config_digest_hex, config_size, final_config_path = create_config(layer_digest, tempdir)
-    manifest_json = write_manifest_object(config_digest, config_size, layer_digest, layer_size, tempdir)
+    """
+    Bundle files into a single layer, config, and manifest in tempdir.
+    """
+    layer_digest, layer_size, final_layer_path = create_layer_tarball(files, tempdir)
+    config_digest, config_size, final_config_path = create_config(layer_digest, tempdir)
+    manifest_json = write_manifest_object(
+        config_digest, config_size, layer_digest, layer_size, tempdir
+    )
     return {
         "layer": final_layer_path,
         "config": final_config_path,
@@ -111,6 +126,9 @@ def make_dir_image(files, tempdir):
     }
 
 def push(image_ref, files):
+    """
+    Push files as a new OCI image to the specified image reference.
+    """
     with tempfile.TemporaryDirectory() as tempdir:
         make_dir_image(files, tempdir)
         ret = run_cmd([
@@ -119,11 +137,13 @@ def push(image_ref, files):
             f"docker://{image_ref}"
         ])
         if ret:
-           return ret
-
+            return ret
         return 0
 
 def pull(image_ref):
+    """
+    Pull files from the specified OCI image reference and extract them into the current directory.
+    """
     with tempfile.TemporaryDirectory() as tempdir:
         ret = run_cmd([
             "skopeo", "copy",
@@ -131,10 +151,10 @@ def pull(image_ref):
             f"dir:{tempdir}"
         ])
         if ret:
-           return ret
+            return ret
 
         manifest_json = os.path.join(tempdir, "manifest.json")
-        with open(manifest_json) as f:
+        with open(manifest_json, encoding="utf-8") as f:
             manifest = json.load(f)
         for layer in manifest["layers"]:
             layer_digest = layer["digest"].split(":")[1]
@@ -145,10 +165,12 @@ def pull(image_ref):
                     with tarfile.open(fileobj=gzfile, mode="r:") as tarf:
                         warnings.simplefilter("ignore", DeprecationWarning)
                         tarf.extractall(".")
-
         return 0
 
 def main():
+    """
+    Entry point for the CLI.
+    """
     parser = argparse.ArgumentParser(description="OCI registry file push/pull tool.")
     subparsers = parser.add_subparsers(dest="command", required=True)
 
@@ -162,11 +184,10 @@ def main():
     args = parser.parse_args()
     if args.command == "push":
         return push(args.image, args.file)
-    elif args.command == "pull":
+    if args.command == "pull":
         return pull(args.image)
-    else:
-        parser.print_help()
+    parser.print_help()
+    return 0
 
 if __name__ == "__main__":
     sys.exit(main())
-
