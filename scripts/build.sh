@@ -4,7 +4,7 @@ main() {
   set -ex -o pipefail
 
   if [ "$1" == "install" ]; then
-    apt install -y pylint
+    sudo apt install -y pylint
   fi
 
   find . -name "*.sh" -print0 | xargs -0 shellcheck 
