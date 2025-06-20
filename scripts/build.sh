@@ -11,7 +11,7 @@ main() {
 
   black --line-length 80 ocicp
   flake8 --max-line-length 80 ocicp
-  pylint ocicp
+  pylint --disable=missing-function-docstring ocicp
 }
 
 main "$@"

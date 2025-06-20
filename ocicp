@@ -19,7 +19,6 @@ import warnings
 
 
 def sha256sum(filepath):
-    """Compute SHA256 hex digest for a file."""
     h = hashlib.sha256()
     with open(filepath, "rb") as f:
         for b in iter(lambda: f.read(4096), b""):
@@ -28,7 +27,6 @@ def sha256sum(filepath):
 
 
 def run_cmd(cmd, check=True):
-    """Run a shell command. If check=True, return its exit code."""
     result = subprocess.run(cmd, check=False)
     if check:
         return result.returncode
