@@ -17,26 +17,31 @@ import shutil
 import gzip
 import warnings
 
+
 def sha256sum(filepath):
     """Compute SHA256 hex digest for a file."""
     h = hashlib.sha256()
-    with open(filepath, 'rb') as f:
-        for b in iter(lambda: f.read(4096), b''):
+    with open(filepath, "rb") as f:
+        for b in iter(lambda: f.read(4096), b""):
             h.update(b)
     return h.hexdigest()
 
+
 def run_cmd(cmd, check=True):
-    """Run a shell command. If check=True, return its exit code, else return 0."""
+    """Run a shell command. If check=True, return its exit code."""
     result = subprocess.run(cmd, check=False)
     if check:
         return result.returncode
     return 0
 
+
 def create_layer_tarball(files, tempdir):
     """
-    1. Create a layer tarball from the given files as a gzip-compressed tar with max compression.
+    1. Create a layer tarball from the given files as a gzip-compressed tar
+    with max compression.
 
-    Files are archived with paths relative to the current directory, like 'tar' would do by default.
+    Files are archived with paths relative to the current directory,
+    like 'tar' would do by default.
     """
     layer_tar_path = os.path.join(tempdir, "layer.tar.gz")
     with gzip.open(layer_tar_path, "wb", compresslevel=9) as gz_out:
@@ -55,6 +60,7 @@ def create_layer_tarball(files, tempdir):
     shutil.move(layer_tar_path, final_layer_path)
     return layer_digest, layer_size, final_layer_path
 
+
 def create_config(layer_digest, tempdir):
     """
     2. Create a minimal config (Docker image config, V2 Schema 2).
@@ -65,14 +71,8 @@ def create_config(layer_digest, tempdir):
         "architecture": "amd64",
         "os": "linux",
         "config": {},
-        "rootfs": {
-            "type": "layers",
-            "diff_ids": [layer_digest]
-        },
-        "history": [{
-            "created": created,
-            "created_by": "ocicp"
-        }]
+        "rootfs": {"type": "layers", "diff_ids": [layer_digest]},
+        "history": [{"created": created, "created_by": "ocicp"}],
     }
     config_json_path = os.path.join(tempdir, "config.json")
     with open(config_json_path, "w", encoding="utf-8") as f:
@@ -85,7 +85,10 @@ def create_config(layer_digest, tempdir):
     shutil.move(config_json_path, final_config_path)
     return config_digest, config_size, final_config_path
 
-def write_manifest_object(config_digest, config_size, layer_digest, layer_size, tempdir):
+
+def write_manifest_object(
+    config_digest, config_size, layer_digest, layer_size, tempdir
+):
     """
     3. Write manifest as an OBJECT (not an array).
     """
@@ -95,20 +98,21 @@ def write_manifest_object(config_digest, config_size, layer_digest, layer_size, 
         "config": {
             "mediaType": "application/vnd.docker.container.image.v1+json",
             "size": config_size,
-            "digest": config_digest
+            "digest": config_digest,
         },
         "layers": [
             {
-                "mediaType": "application/vnd.docker.image.rootfs.diff.tar.gzip",
+                "mediaType": ("application/vnd.docker.image.rootfs.diff.tar.gzip"),
                 "size": layer_size,
-                "digest": layer_digest
+                "digest": layer_digest,
             }
-        ]
+        ],
     }
     manifest_json = os.path.join(tempdir, "manifest.json")
     with open(manifest_json, "w", encoding="utf-8") as f:
         json.dump(manifest, f, separators=(",", ":"))
     return manifest_json
+
 
 def make_dir_image(files, tempdir):
     """
@@ -122,8 +126,9 @@ def make_dir_image(files, tempdir):
     return {
         "layer": final_layer_path,
         "config": final_config_path,
-        "manifest": manifest_json
+        "manifest": manifest_json,
     }
+
 
 def push(image_ref, files):
     """
@@ -131,23 +136,17 @@ def push(image_ref, files):
     """
     with tempfile.TemporaryDirectory() as tempdir:
         make_dir_image(files, tempdir)
-        ret = run_cmd([
-            "skopeo", "copy",
-            f"dir:{tempdir}",
-            f"docker://{image_ref}"
-        ])
+        ret = run_cmd(["skopeo", "copy", f"dir:{tempdir}", f"docker://{image_ref}"])
         return ret
+
 
 def pull(image_ref):
     """
-    Pull files from the specified OCI image reference and extract them into the current directory.
+    Pull files from the specified OCI image reference and extract them
+    into the current directory.
     """
     with tempfile.TemporaryDirectory() as tempdir:
-        ret = run_cmd([
-            "skopeo", "copy",
-            f"docker://{image_ref}",
-            f"dir:{tempdir}"
-        ])
+        ret = run_cmd(["skopeo", "copy", f"docker://{image_ref}", f"dir:{tempdir}"])
         if ret:
             return ret
 
@@ -165,6 +164,7 @@ def pull(image_ref):
                         tarf.extractall(".")
         return 0
 
+
 def main():
     """
     Entry point for the CLI.
@@ -172,12 +172,16 @@ def main():
     parser = argparse.ArgumentParser(description="OCI registry file push/pull tool.")
     subparsers = parser.add_subparsers(dest="command", required=True)
 
-    push_parser = subparsers.add_parser("push", help="Push files to OCI image")
-    push_parser.add_argument("image", help="OCI image reference (e.g. quay.io/repo/image)")
+    push_parser = subparsers.add_parser("push", help="Push files to image")
+    push_parser.add_argument(
+        "image", help="OCI image reference (e.g. quay.io/repo/image)"
+    )
     push_parser.add_argument("file", nargs="+", help="Files to push")
 
-    pull_parser = subparsers.add_parser("pull", help="Pull files from OCI image")
-    pull_parser.add_argument("image", help="OCI image reference (e.g. quay.io/repo/image)")
+    pull_parser = subparsers.add_parser("pull", help="Pull files from image")
+    pull_parser.add_argument(
+        "image", help="OCI image reference (e.g. quay.io/repo/image)"
+    )
 
     args = parser.parse_args()
     if args.command == "push":
@@ -186,6 +190,7 @@ def main():
         return pull(args.image)
     parser.print_help()
     return 0
+
 
 if __name__ == "__main__":
     sys.exit(main())
