@@ -102,7 +102,9 @@ def write_manifest_object(
         },
         "layers": [
             {
-                "mediaType": ("application/vnd.docker.image.rootfs.diff.tar.gzip"),
+                "mediaType": (
+                    "application/vnd.docker.image.rootfs.diff.tar.gzip"
+                ),
                 "size": layer_size,
                 "digest": layer_digest,
             }
@@ -118,8 +120,12 @@ def make_dir_image(files, tempdir):
     """
     Bundle files into a single layer, config, and manifest in tempdir.
     """
-    layer_digest, layer_size, final_layer_path = create_layer_tarball(files, tempdir)
-    config_digest, config_size, final_config_path = create_config(layer_digest, tempdir)
+    layer_digest, layer_size, final_layer_path = create_layer_tarball(
+        files, tempdir
+    )
+    config_digest, config_size, final_config_path = create_config(
+        layer_digest, tempdir
+    )
     manifest_json = write_manifest_object(
         config_digest, config_size, layer_digest, layer_size, tempdir
     )
@@ -136,7 +142,9 @@ def push(image_ref, files):
     """
     with tempfile.TemporaryDirectory() as tempdir:
         make_dir_image(files, tempdir)
-        ret = run_cmd(["skopeo", "copy", f"dir:{tempdir}", f"docker://{image_ref}"])
+        ret = run_cmd(
+            ["skopeo", "copy", f"dir:{tempdir}", f"docker://{image_ref}"]
+        )
         return ret
 
 
@@ -146,7 +154,9 @@ def pull(image_ref):
     into the current directory.
     """
     with tempfile.TemporaryDirectory() as tempdir:
-        ret = run_cmd(["skopeo", "copy", f"docker://{image_ref}", f"dir:{tempdir}"])
+        ret = run_cmd(
+            ["skopeo", "copy", f"docker://{image_ref}", f"dir:{tempdir}"]
+        )
         if ret:
             return ret
 
@@ -169,7 +179,9 @@ def main():
     """
     Entry point for the CLI.
     """
-    parser = argparse.ArgumentParser(description="OCI registry file push/pull tool.")
+    parser = argparse.ArgumentParser(
+        description="OCI registry file push/pull tool."
+    )
     subparsers = parser.add_subparsers(dest="command", required=True)
 
     push_parser = subparsers.add_parser("push", help="Push files to image")

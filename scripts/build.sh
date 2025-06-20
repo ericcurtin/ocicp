@@ -1,12 +1,17 @@
 #!/bin/bash
 
 main() {
-  set -eux -o pipefail 
+  set -ex -o pipefail
+
+  if [ "$1" == "install" ]; then
+    apt install -y pylint
+  fi
 
   find . -name "*.sh" -print0 | xargs -0 shellcheck 
+
+  black --line-length 80 ocicp
+  flake8 --max-line-length 80 ocicp
   pylint ocicp
-  flake8 ocicp
-  black ocicp
 }
 
 main "$@"
