@@ -4,7 +4,7 @@ main() {
   set -ex -o pipefail
 
   if [ "$1" == "install" ]; then
-    sudo apt install -y pylint black
+    sudo apt install -y pylint black flake8
   fi
 
   find . -name "*.sh" -print0 | xargs -0 shellcheck 
