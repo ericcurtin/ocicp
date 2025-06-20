@@ -174,9 +174,6 @@ def pull(image_ref):
 
 
 def main():
-    """
-    Entry point for the CLI.
-    """
     parser = argparse.ArgumentParser(
         description="OCI registry file push/pull tool."
     )
